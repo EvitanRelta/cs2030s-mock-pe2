@@ -8,6 +8,10 @@ package cs2030s.fp;
  * @param <T> Type of the value contained in the Try, returned by 'get()'.
  */
 public abstract class Try<T> {
+  private Try() {
+
+  }
+
   protected abstract boolean isSucess();
 
   public abstract T get() throws Throwable;
