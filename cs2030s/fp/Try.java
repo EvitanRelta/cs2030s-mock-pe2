@@ -190,8 +190,9 @@ public abstract class Try<T> {
     @Override
     public <U> Try<U> flatMap(Transformer<? super T, ? extends Try<? extends U>> transformer) {
       try {
-        U newValue = transformer.transform(this.value).get();
-        return Try.success(newValue);
+        @SuppressWarnings("unchecked")
+        Try<U> innerTry = (Try<U>) transformer.transform(this.value);
+        return innerTry;
       } catch (Throwable e) {
         return Try.failure(e);
       }
