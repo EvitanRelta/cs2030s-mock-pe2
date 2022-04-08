@@ -23,9 +23,9 @@ public abstract class Try<T> {
   );
 
   /**
-   * Passes Throwable to 'consumer' param upon failure. If 'consumer' doesn't
-   * throw any errors, return the same failed Try. Else, return a new failed
-   * Try with the newly thrown Throwable.
+   * If Try succeeds, do nothing. Else passes the failed Try's Throwable to 
+   * 'consumer' param. If 'consumer' doesn't throw any errors, return the same 
+   * failed Try. Else, return a new failed Try with the newly thrown Throwable.
    *
    * @param consumer Consumer that takes in the failure's Throwable.
    * @return The same Try instance, or a new failed Try (if consumer throws a Throwable).
@@ -34,9 +34,10 @@ public abstract class Try<T> {
 
 
   /**
-   * Attempt to recover from a failed Try. Passes the failed Try's Throwable
-   * to 'transformer' to get a new value. If 'transformer' throws a Throwable,
-   * return another failed Try with the new Throwable.
+   * If Try succeeds, do nothing. Else attempt to recover from a failed Try,
+   * by passing the failed Try's Throwable to 'transformer' to get a new value. 
+   * If 'transformer' throws a Throwable, return another failed Try with the 
+   * new Throwable; else return a successful Try with the new value.
    *
    * @param transformer Transformer that transforms the failed Throwable to a new value.
    * @return A recovered Try, or a new failed Try (if transformer fails).
@@ -128,14 +129,6 @@ public abstract class Try<T> {
       return output;
     }
 
-    /**
-     * Passes Throwable to 'consumer' param upon failure. If 'consumer' doesn't
-     * throw any errors, return the same failed Try. Else, return a new failed
-     * Try with the newly thrown Throwable.
-     *
-     * @param consumer Consumer that takes in the failure's Throwable.
-     * @return The same Try instance, or a new failed Try (if consumer throws a Throwable).
-     */
     @Override
     public Try<Object> onFailure(Consumer<? super Throwable> consumer) {
       try {
@@ -145,15 +138,7 @@ public abstract class Try<T> {
         return Try.failure(e);
       }
     }
-
-    /**
-     * Attempt to recover from a failed Try. Passes the failed Try's Throwable
-     * to 'transformer' to get a new value. If 'transformer' throws a Throwable,
-     * return another failed Try with the new Throwable.
-     *
-     * @param transformer Transformer that transforms the failed Throwable to a new value.
-     * @return A recovered Try, or a new failed Try (if transformer fails).
-     */
+    
     @Override
     public Try<Object> recover(Transformer<? super Throwable, ? extends Object> transformer) {
       try {
@@ -214,24 +199,12 @@ public abstract class Try<T> {
         return Try.failure(e);
       }
     }
-
-    /**
-     * Does nothing on successful Try.
-     *
-     * @param consumer Consumer that takes in the failure's Throwable.
-     * @return The same Try instance.
-     */
+    
     @Override
     public Try<T> onFailure(Consumer<? super Throwable> consumer) {
       return this;
     }
-
-    /**
-     * Does nothing on successful Try.
-     *
-     * @param transformer Transformer that takes in the failure's Throwable.
-     * @return The same Try instance.
-     */
+    
     @Override
     public Try<T> recover(Transformer<? super Throwable, ? extends T> transformer) {
       return this;
