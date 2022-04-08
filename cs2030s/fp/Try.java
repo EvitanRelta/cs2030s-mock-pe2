@@ -78,23 +78,20 @@ public abstract class Try<T> {
    * @return The failed Try.
    */
   public static <T> Try<T> failure(Throwable throwable) {
-    // Failure doesn't have any value inside, thus its safe to typecast.
-    @SuppressWarnings("unchecked")
-    Try<T> output = (Try<T>) new Failure(throwable);
-    return output;
+    return new Failure<>(throwable);
   }
 
 
   // ===================== Nested Classes ====================================
 
-  private static class Failure extends Try<Object> {
+  private static class Failure<T> extends Try<T> {
     private final Throwable throwable;
 
     private Failure(Throwable throwable) {
       this.throwable = throwable;
     }
 
-    public Object get() throws Throwable {
+    public T get() throws Throwable {
       throw this.throwable;
     }
 
@@ -109,28 +106,28 @@ public abstract class Try<T> {
         return false;
       }
 
-      Failure other = (Failure) obj;
+      Failure<?> other = (Failure<?>) obj;
 
       return String.valueOf(this.throwable) 
           == String.valueOf(other.throwable);
     }
 
     @Override
-    public <U> Try<U> map(Transformer<? super Object, ? extends U> transformer) {
+    public <U> Try<U> map(Transformer<? super T, ? extends U> transformer) {
       @SuppressWarnings("unchecked")
       Try<U> output = (Try<U>) this;
       return output;
     }
 
     @Override
-    public <U> Try<U> flatMap(Transformer<? super Object, ? extends Try<? extends U>> transformer) {
+    public <U> Try<U> flatMap(Transformer<? super T, ? extends Try<? extends U>> transformer) {
       @SuppressWarnings("unchecked")
       Try<U> output = (Try<U>) this;
       return output;
     }
 
     @Override
-    public Try<Object> onFailure(Consumer<? super Throwable> consumer) {
+    public Try<T> onFailure(Consumer<? super Throwable> consumer) {
       try {
         consumer.consume(this.throwable);
         return this;
@@ -140,9 +137,9 @@ public abstract class Try<T> {
     }
     
     @Override
-    public Try<Object> recover(Transformer<? super Throwable, ? extends Object> transformer) {
+    public Try<T> recover(Transformer<? super Throwable, ? extends T> transformer) {
       try {
-        Object newValue = transformer.transform(this.throwable);
+        T newValue = transformer.transform(this.throwable);
         return Try.success(newValue);
       } catch (Throwable e) {
         return Try.failure(e);
