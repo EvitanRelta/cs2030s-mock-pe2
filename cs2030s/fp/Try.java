@@ -150,7 +150,7 @@ public abstract class Try<T> {
   private static class Success<T> extends Try<T> {
     private final T value;
 
-    public Success(T value) {
+    private Success(T value) {
       this.value = value;
     }
 
